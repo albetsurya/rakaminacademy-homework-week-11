@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nodemon app.js",
     "test": "jest --coverage",
+    "ci-test": "npx sequelize-cli db:create --env test && npx sequelize-cli db:migrate --env test && jest --detectOpenHandles --runInBand --forceExit --coverage --verbose",
     "docker": "NODE_ENV=docker && node app.js"
   },
   "keywords": [],
