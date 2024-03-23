@@ -1,17 +1,16 @@
 const todoService = require("../services/todoService");
 
 const todoController = {
-  getAllTodos: async (req, res) => {
+  getAllTodos: async (req, res, next) => {
     try {
       const todos = await todoService.getAllTodos();
       res.json(todos);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      next(error);
     }
   },
 
-  getTodoById: async (req, res) => {
+  getTodoById: async (req, res, next) => {
     try {
       const todo = await todoService.getTodoById(req.params.id);
       if (todo) {
@@ -20,12 +19,11 @@ const todoController = {
         res.status(404).json({ error: "Todo not found" });
       }
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      next(error);
     }
   },
 
-  createTodo: async (req, res) => {
+  createTodo: async (req, res, next) => {
     try {
       const { title } = req.body;
       if (!title) {
@@ -35,29 +33,40 @@ const todoController = {
       const todo = await todoService.createTodo(title);
       res.status(201).json(todo);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      next(error);
     }
   },
 
-  updateTodo: async (req, res) => {
+  updateTodo: async (req, res, next) => {
     try {
       const { title } = req.body;
-      const todo = await todoService.updateTodo(req.params.id, title);
-      res.json({ message: "Todo updated successfully", todo });
+      const updatedTodo = await todoService.updateTodo(req.params.id, title);
+console.log(updatedTodo)
+      if (updatedTodo) {
+        res.status(200).json({
+          message: "Todo updated successfully",
+          todo: updatedTodo,
+        });
+      } else {
+        res.status(404).json({ message: "Todo not found" });
+      }
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      next(error);
     }
   },
 
-  deleteTodo: async (req, res) => {
+  deleteTodo: async (req, res, next) => {
     try {
-      await todoService.softDeleteTodo(req.params.id);
-      res.json({ message: "Todo soft deleted" });
+      const todoId = req.params.id;
+      const deletedTodo = await todoService.softDeleteTodo(todoId);
+
+      if (deletedTodo) {
+        res.status(200).json({ message: "Todo soft deleted" });
+      } else {
+        res.status(404).json({ message: "Todo not found" });
+      }
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      next(error);
     }
   },
 };

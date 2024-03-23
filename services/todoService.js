@@ -6,7 +6,11 @@ const todoService = {
       const todos = await todoRepository.getAllTodos();
       return todos;
     } catch (error) {
-      throw new Error("Failed to fetch todos");
+      if (error.message && error.message.includes("Database connection")) {
+        throw new Error("Failed to connect to database");
+      } else {
+        throw new Error("Failed to fetch todos");
+      }
     }
   },
 
@@ -15,7 +19,11 @@ const todoService = {
       const todo = await todoRepository.getTodoById(id);
       return todo;
     } catch (error) {
-      throw new Error("Failed to fetch todo");
+      if (error.message && error.message.includes("Todo not found")) {
+        throw new Error(`Todo with ID ${id} not found`);
+      } else {
+        throw new Error("Failed to fetch todo");
+      }
     }
   },
 
@@ -33,16 +41,23 @@ const todoService = {
       const todo = await todoRepository.updateTodo(id, title);
       return todo;
     } catch (error) {
-      throw new Error("Failed to update todo");
+      if (error.message && error.message.includes("Todo not found")) {
+      } else {
+        throw error;
+      }
     }
   },
 
   softDeleteTodo: async (id) => {
     try {
-      const todo = await todoRepository.softDeleteTodo(id);
+      const todo = await todoRepository.getTodoById(id);
       return todo;
     } catch (error) {
-      throw new Error("Failed to soft delete todo");
+      if (error.message && error.message.includes("Todo not found")) {
+        throw new Error(`Todo with ID ${id} not found`);
+      } else {
+        throw error;
+      }
     }
   },
 };

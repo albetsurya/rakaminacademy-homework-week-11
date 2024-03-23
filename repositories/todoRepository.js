@@ -36,27 +36,40 @@ const todoRepository = {
     try {
       const todo = await Todo.findByPk(id);
       if (!todo) {
-        throw new Error("Todo not found");
+        const error = new Error("Todo not found");
+        error.statusCode = 404;
+        throw error;
       } else {
         await todo.update({ title });
         return todo;
       }
     } catch (error) {
-      throw new Error("Failed to update todo in database");
+      if (error.statusCode) {
+        throw error;
+      } else {
+        throw new Error("Failed to update todo in database: " + error.message);
+      }
     }
   },
 
-  softDeleteTodo: async (id) => {
+ softDeleteTodo: async (id) => {
     try {
       const todo = await Todo.findByPk(id);
       if (!todo) {
-        throw new Error("Todo not found");
+        const error = new Error("Todo not found");
+        error.statusCode = 404;
+        throw error;
       } else {
-        await todo.destroy(id);
+        await todo.destroy();
         return todo;
       }
     } catch (error) {
-      throw new Error("Failed to soft delete todo in database");
+      if (error.statusCode) {
+        throw error;
+      } else {
+        const errorMessage = "Failed to soft delete todo in database";
+        throw new Error(errorMessage);
+      }
     }
   },
 };
