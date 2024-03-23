@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "docker": "NODE_ENV=docker && node app.js"
   },
   "keywords": [],
   "author": "",
