@@ -1,0 +1,26 @@
+image: node:14
+
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  script:
+    - npm install
+
+test:
+  stage: test
+  script:
+    - npm test
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying to production"
+  environment:
+    name: production
+    url: https://your-api.com
+  only:
+    - master  
